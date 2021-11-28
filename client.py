@@ -1,10 +1,24 @@
 import socket
 
-ip = "127.0.0.1"
-port = 25566
+PORT = 25565
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "!DISCONNECT"
+SERVER = socket.gethostbyname(socket.gethostname())
+ADDR = (SERVER, PORT)
 
-server = socket.socket()
-server.connect((ip, port))
-print(server.recv(1024).decode())
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect(ADDR)
 
-server.close()
+def send(msg):
+    message = msg.encode(FORMAT)
+    client.send(message)
+    print(client.recv(2048).decode(FORMAT))
+
+connected = True
+while connected:
+    msg = input("Input: ")
+    send(msg)
+    if msg == DISCONNECT_MESSAGE:
+        connected = False 
+
+send(DISCONNECT_MESSAGE)

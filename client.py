@@ -10,9 +10,16 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
 
 def send(msg):
-    message = msg.encode(FORMAT)
-    client.send(message)
-    print(client.recv(2048).decode(FORMAT))
+    if ((".txt" in msg) and ("SPO" in msg)):
+        fname = msg.split()[0]
+        f = open(fname)
+        for x in f:
+            client.send(x.rstrip().encode(FORMAT))
+            print(client.recv(2048).decode(FORMAT))
+    else:
+        message = msg.encode(FORMAT)
+        client.send(message)
+        print(client.recv(2048).decode(FORMAT))
 
 connected = True
 while connected:

@@ -21,4 +21,4 @@ while connected:
     if msg == DISCONNECT_MESSAGE:
         connected = False 
 
-send(DISCONNECT_MESSAGE)
+client.close()

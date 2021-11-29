@@ -8,7 +8,7 @@ FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 accounts = []
 file = open('account_data.txt')
-number_listening = 2
+listening_max = 1     #Maximum number listening
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #AF_INET: IPv4, SOCK_STREAM: TCP
 server.bind(ADDR) #bind the socket with the address
@@ -49,9 +49,16 @@ def SPO(triangle_values, conn, addr):
         conn.send("Output: Not a Triangle".encode(FORMAT))
 
 
-def handle_client(conn, addr):
+def handle_client(conn, addr, client_live):
     verified = False #log in or not
-    connected = True #connection of the server and the specific client
+    if client_live > listening_max:
+        connected = False
+        print("One connection lost.")
+        conn.send("server is full".encode(FORMAT))
+    else:
+        connected = True 
+        conn.send("server is ready".encode(FORMAT))
+
     while connected:
         msg = conn.recv(2048).decode(FORMAT) #2048 represent the size of the buffer, for now it's 2048 bytes
         if verified == True:   #verified account
@@ -99,13 +106,14 @@ def handle_client(conn, addr):
         
 
 def start():
-    server.listen(number_listening) #Define the maximum number the server will be listening at once
+    server.listen()
     print("The server is ready to provide service.")
-    print(f"The maximum number of connections is {number_listening}.")
+    print(f"The maximum number of connections is {listening_max}.")
     while True:
         conn, addr = server.accept() #accepct the connection from the client #conn: the client socket, addr: the client IP address
-        thread = threading.Thread(target=handle_client, args=(conn, addr)) #We don't want the other clients waiting, so we create a thread. Each thread can handle one client.
+        client_live = threading.active_count()
+        thread = threading.Thread(target=handle_client, args=(conn, addr, client_live)) #We don't want the other clients waiting, so we create a thread. Each thread can handle one client.
         thread.start() #starting the thread
-        print(f"Accept {threading.activeCount() - 1} connection.") #print out the total connection the server is handling
+        print(f"Accept {client_live} connection.") #print out the total connection the server is handling
 
 start()

@@ -1,4 +1,5 @@
 import socket
+import time
 
 PORT = 25565
 FORMAT = 'utf-8'
@@ -8,7 +9,14 @@ ADDR = (SERVER, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #AF_INET: IPv4, SOCK_STREAM: TCP
 client.connect(ADDR) #connect the client to the server
-connected = True #The varible for us to know they are still connecting
+#The varible for us to know they are still connecting
+
+server_status = client.recv(2048).decode(FORMAT)
+if server_status == "server is ready":
+    connected = True
+elif server_status == "server is full":
+    connected = False
+    print("The server is busy right now. Please try again later.")
 
 def send(msg):
     if ((".txt" in msg) and ("SPO" in msg)): #One input, but multiple output

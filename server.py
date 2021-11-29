@@ -51,9 +51,8 @@ def SPO(triangle_values, conn, addr):
 
 def handle_client(conn, addr, client_live):
     verified = False #log in or not
-    if client_live > listening_max:
+    if client_live > listening_max: 
         connected = False
-        print("One connection lost.")
         conn.send("server is full".encode(FORMAT))
     else:
         connected = True 
@@ -89,7 +88,6 @@ def handle_client(conn, addr, client_live):
                     conn.send("Output: Account not registered or incorrect password. Please try again.".encode(FORMAT))
             elif msg == DISCONNECT_MESSAGE:
                 connected = False
-                print(f"[{addr}] One connection lost.")
                 conn.send("Output: Sorry. We can't help you without a valid account. Come back next day!".encode(FORMAT))
             elif "SPO" in msg:
                 a = msg.split(' ')[0].split(',')[0]
@@ -101,7 +99,7 @@ def handle_client(conn, addr, client_live):
                 print(f"[{addr}] Invalid command.")
                 conn.send("Output: Permission denied. Try logging in or other command.".encode(FORMAT))
     
-    
+    print(f"[{addr}] One connection lost.")
     conn.close()
         
 

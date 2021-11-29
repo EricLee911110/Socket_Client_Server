@@ -6,22 +6,22 @@ DISCONNECT_MESSAGE = "!DISCONNECT"
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(ADDR)
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #AF_INET: IPv4, SOCK_STREAM: TCP
+client.connect(ADDR) #connect the client to the server
+connected = True #The varible for us to know they are still connecting
 
 def send(msg):
-    if ((".txt" in msg) and ("SPO" in msg)):
-        fname = msg.split()[0]
+    if ((".txt" in msg) and ("SPO" in msg)): #One input, but multiple output
+        fname = msg.split()[0] #"triangle_data_example.txt SPO"
         f = open(fname)
-        for x in f:
+        for x in f: #send each line in the txt file
             client.send(x.rstrip().encode(FORMAT))
             print(client.recv(2048).decode(FORMAT))
-    else:
+    else:                                    #One input, one output
         message = msg.encode(FORMAT)
         client.send(message)
         print(client.recv(2048).decode(FORMAT))
 
-connected = True
 while connected:
     msg = input("Input: ")
     send(msg)
